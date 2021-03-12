@@ -82,7 +82,7 @@ app.layout = html.Div([
         ], className='three columns'),
         #dcc.Graph(id = 'third-graph', figure= fig_bot_right, className='three columns'),
         #dcc.Graph(id = 'fourth-graph', figure= fig_bot_right, className='three columns')
-    ],className="row", style={"backgroundColor": "#800080", "border": "solid"})
+    ],className="row", style={"backgroundColor": "#800081", "border": "solid"})
 
 
 
