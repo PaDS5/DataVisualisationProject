@@ -40,10 +40,25 @@ fig = px.pie(df_filtered, values="rea", names="sexe")
 with open('departements.geojson') as file:
     geo = geojson.load(file)
 
-figtest = px.choropleth(df, geojson= geo, locations='dep', featureidkey="properties.code", color_continuous_scale="Viridis", scope="europe")
+df_map = df[(df['jour'] == '2021-03-02') & (df['sexe'] == 0)]
+df_dep_reg = pd.read_csv('departements-region.csv')
+
+df_map['dep_name'] = df_dep_reg['dep_name'].to_numpy()
+df_map['region_name'] = df_dep_reg['region_name'].to_numpy()
+df_curr_situation = df_map
+df_curr_situation['total_hosp_per_region'] = df_curr_situation.groupby(['region_name'], as_index=False)['hosp'].cumsum()
+df_curr_situation['total_rea_per_region'] = df_curr_situation.groupby(['region_name'], as_index=False)['rea'].cumsum()
+
+df_curr_situation_fig_hosp = df_curr_situation.groupby(['region_name'], as_index=False).max()
+
+
+figtest = px.choropleth(df_map, geojson= geo, locations='dep', featureidkey="properties.code", color='dc',labels={'dc': 'Total décès'}, color_continuous_scale="Viridis", scope="europe",hover_name='dep_name' ,hover_data=['hosp', 'rea'])
 figtest.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
 #figtest.update_layout(margin={"r":50,"t":50,"l":50,"b":50})
 figtest.update_layout(width = 1000, height = 1000)
+
+fig_region = px.pie(df_curr_situation_fig_hosp, values='total_hosp_per_region', names='region_name', title="Hospitalisation by region")
+fig_region_rea = px.pie(df_curr_situation_fig_hosp, values='total_rea_per_region', names='region_name', title="Reanimation by region")
 
 fig_bot_right = px.pie(df_filtered, values="hosp", names="sexe_str", title = "Hospitalisations by Gender")
 fig_bot_right.update_traces(textposition='outside',
@@ -56,6 +71,24 @@ fig_bot_right.update_traces(textposition='outside',
                             )
 
 fig_bot_left = px.pie(df_filtered, values="rea", names="sexe_str", title = "Reanimation by Gender")
+fig_bot_left.update_traces(textposition='outside',
+                                  textinfo='percent+label',
+                                  marker=dict(line=dict(color='#000000',
+                                                        width=2)),
+                                  pull=[0.05, 0, 0.03],
+                                  opacity=0.9,
+                                  # rotation=180
+                            )
+
+fig_t = px.pie(df_filtered, values="dc", names="sexe_str", title="Deceased by Gender")
+fig_t.update_traces(textposition='outside',
+                                  textinfo='percent+label',
+                                  marker=dict(line=dict(color='#000000',
+                                                        width=2)),
+                                  pull=[0.05, 0, 0.03],
+                                  opacity=0.9,
+                                  # rotation=180
+                            )
 
 fig_total_hosp = px.scatter(df_cumul_hosp, x ='jour', y='cumul_hosp', title="Evolution of the number of people hospitalized in France")
 fig_total_rea = px.scatter(df_cumul_hosp, x ='jour', y='cumul_rea', title="Evolution of the number of people in reanimation in France")
@@ -171,28 +204,43 @@ app.layout = html.Div([
                 style={"textAlign": "justify", "color": "white"}),
             html.Br(),
 
-        ], className="seven columns", style={"backgroundColor": "#313131", "padding": "3%"}),
+        ], className="row", style={"backgroundColor": "#313131", "padding": "3%"}),
+
 
         html.Div([
-            html.Br()
-        ], className="one columns"),
+            html.Div([
+                dcc.Graph(
+                    id='graph2',
+                    figure=fig_bot_right
+                ),
+            ], className='four columns'),
 
-        html.Div([
-            dcc.Graph(
-                id='graph2',
-                figure=fig_bot_right),
+            html.Div([
+                dcc.Graph(
+                    id='graph3',
+                    figure=fig_bot_left
+                ),
+            ], className='four columns'),
 
-            html.Br(),
+            html.Div([
+                dcc.Graph(
+                    id='graph15',
+                    figure=fig_t
+                ),
+            ], className='four columns'),
 
-            dcc.Graph(
-                id='graph3',
-                figure=fig_bot_left),
-        ], className="four columns"),
+        ], className="row"),
 
 
-    ], className="row", style={"padding": "3%", "border": "solid"}),
+    ], style={"padding": "3%", "border": "solid"}),
 
     html.Div([
+        html.H2('Current COVID-19 situation in France', style={"color": "white", "textAlign": "center"}),
+    ], className="row", style={"backgroundColor": "#313131", "padding": "3%"}),
+
+    html.Div([
+
+
 
         html.Div([
             dcc.Graph(
@@ -201,22 +249,26 @@ app.layout = html.Div([
         ], className="seven columns", style={"height":"100%"}),
 
         html.Div([
-            html.H4('Second paragraph', style={"color": "white", "textAlign": "center"}),
-            html.Br(),
-            html.P(
-                "Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
-                style={"textAlign": "justify", "color": "white"}),
-            html.Br(),
-            html.P(
-                'We can see the number of hospitalisations every day, number of reanimation and deaths (cumulated)\n',
-                style={"textAlign": "justify", "color": "white"}),
-            html.Br(),
 
-        ], className="five columns", style={"backgroundColor": "#313131"}),
+            html.Div([
+                dcc.Graph(
+                    id='graph861',
+                    figure=fig_region),
+            ], style={"height": "100%"}),
 
-    ])
+            html.Div([
+                dcc.Graph(
+                    id='graph871',
+                    figure=fig_region_rea),
+            ], style={"height": "100%"}),
 
-], style={"padding": "3%", "border": "solid"})
+        ], className="five columns", style={"backgroundColor": "#313131", "padding":"3%"}),
+
+    ], className="row", style={"padding": "3%", "border": "solid"}),
+
+
+
+], style={"padding": "3%"})
 
 @app.callback(
     Output('first_graph', 'figure'),
