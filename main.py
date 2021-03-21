@@ -13,10 +13,20 @@ from apps import test, vacci
 
 
 app.layout = html.Div([
+    html.H1('Evolution of the COVID-19 situation in France', style={"textAlign": "center"}),
     dcc.Location(id='url', refresh=False),
+
     html.Div([
-        dcc.Link('Covid-19 in France', href='/apps/test'),
-        dcc.Link('Vaccination in France', href='/apps/vacci'),
+        html.Br(),
+    ], className="three columns"),
+
+    html.Div([
+        dcc.Link('Covid-19 in France',className="three columns", href='/apps/test',
+                 style={"font":"bold 30px Arial", "text_decoration":"none", "padding":"2px 6px 2px 6px", "color":"#333333", "background-color":"EEEEEE", "textAlign":"center"}),
+        dcc.Link('Vaccination in France',className="three columns", href='/apps/vacci',
+                 style={"font": "bold 30px Arial", "text_decoration": "none", "padding": "2px 6px 2px 6px",
+                        "color": "#333333", "background-color": "EEEEEE"}
+                 ),
     ], className="row"),
     html.Div(id='page-content', children=[])
 ])
@@ -30,7 +40,7 @@ def display_page(pathname):
     if pathname == '/apps/vacci':
         return vacci.layout
     else:
-        return "404 Page Error! Please choose a link"
+        return ""
 
 
 if __name__ == '__main__':

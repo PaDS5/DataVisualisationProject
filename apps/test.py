@@ -119,7 +119,7 @@ layout = html.Div([
 
     html.Div([
         html.Div([
-            html.H4('First graph', style={"color": "white", "textAlign":"center"}),
+            html.H4('Global evolution in France', style={"color": "white", "textAlign":"center"}),
             html.Br(),
             html.P('Here we can choose the parameter that we want to see across time', style={"textAlign" : "justify", "color": "white"}),
             html.Br(),
@@ -161,45 +161,52 @@ layout = html.Div([
         ], className="one columns"),
 
         html.Div([
-            html.H4('Second paragraph', style={"color": "white", "textAlign": "center"}),
+            html.H4('Hospitalisations and Reanimations', style={"color": "white", "textAlign": "center"}),
             html.Br(),
             html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
             html.P(
-                'We can see the number of hospitalisations every day, number of reanimation and deaths (cumulated)\n',
+                'We can see the number of hospitalisations every day and number of reanimation (these results are cumulated)\n',
                 style={"textAlign": "justify", "color": "white"}),
             html.Br(),
 
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
             html.Br(),
-            html.P("Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+            html.P("",
                    style={"textAlign": "justify", "color": "white"}),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
             html.Br(),
 
 
@@ -214,14 +221,14 @@ layout = html.Div([
 
 
         html.Div([
-            html.H4('Second paragraph', style={"color": "white", "textAlign": "center"}),
+            html.H4('Analysis per Gender', style={"color": "white", "textAlign": "center"}),
             html.Br(),
             html.P(
-                "Now let's have a look at the total number of people who were hospitalized and who were in reanimation",
+                "Now let's have a look at the influence of the gender on the different aspects of the pandemic",
                 style={"textAlign": "justify", "color": "white"}),
             html.Br(),
             html.P(
-                'We can see the number of hospitalisations every day, number of reanimation and deaths (cumulated)\n',
+                'We can see total number of hospitalisations, reanimations and deceased per gender to see the impact of it\n',
                 style={"textAlign": "justify", "color": "white"}),
             html.Br(),
 

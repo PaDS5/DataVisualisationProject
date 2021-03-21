@@ -49,7 +49,7 @@ figtest.update_layout(width=1000, height=1000)
 
 fig_region = px.pie(df_curr_situation_vac_hosp, values='n_cum_dose1', names='region_name', title="region")
 
-fig_bot_right = px.pie(df_filtered, values="n_dose1", names="sexe_str", title="vaccination 1 by Gender")
+fig_bot_right = px.pie(df_filtered, values="n_dose1", names="sexe_str", title="accination 1 by Gender")
 fig_bot_right.update_traces(textposition='outside',
                             textinfo='percent+label',
                             marker=dict(line=dict(color='#000000',
@@ -88,7 +88,7 @@ fig_daily_vac2 = px.scatter(df_map, x=df_daily_vac["jour"], y=df_daily_vac['n_do
                             title="Evolution of the number of people vaccinated stage 2 in France each day")
 
 layout = html.Div([
-    html.H1('Covid Data in France', style={"textAlign": "center"}),
+    html.H1('Covid Vaccination Data in France', style={"textAlign": "center"}),
 
     html.Div([
         html.Div([
@@ -103,7 +103,7 @@ layout = html.Div([
             html.Div(dcc.Dropdown(
                 id='yaxis-column23',
                 options=[{'label': i, 'value': i} for i in liste_y],
-                value='hosp'
+                value='n_dose1'
             )),
         ], className="three columns", style={"padding": "3%"}),
 
