@@ -7,15 +7,36 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta
+from app import app
 
-df = pd.read_csv("donnees-hospitalieres.csv", sep = ";")
+now = datetime.now()
+if(now.hour <19 and now.minute < 54):
+    current_date = datetime.today() - timedelta(1)
+else:
+    current_date = datetime.today()
+
+#current_date = datetime.today() - timedelta(1)
+
+current_date = current_date.strftime('%Y-%m-%d')
+print(current_date)
+df = pd.read_csv("apps/donnees-hospitalieres.csv", sep =";")
 print(df.head())
 
-
+stringtolook = "https://static.data.gouv.fr/resources/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/20210320-185421/donnees-hospitalieres-covid19-"
+stringend = "-18h54.csv"
+link = stringtolook + current_date + stringend
+print("tes  %s", link)
+test_dataset = link
+#test_dataset = "https://static.data.gouv.fr/resources/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/20210320-185421/donnees-hospitalieres-covid19-2021-03-20-18h54.csv"
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets = external_stylesheets)
-server = app.server
+#app = dash.Dash(__name__, external_stylesheets = external_stylesheets)
+#server = app.server
 
+dffre = pd.read_csv(test_dataset, sep=";")
+dffre = dffre.drop(['HospConv', 'SSR_USLD', 'autres'], axis=1)
+print("test")
+print(dffre.head())
 
 liste_y = ['hosp', 'rea', 'rad', 'dc']
 liste_x = ['jour']
@@ -37,11 +58,11 @@ df_new_filtered = df[df['sexe'] == 0].groupby('dep')
 
 fig = px.pie(df_filtered, values="rea", names="sexe")
 
-with open('departements.geojson') as file:
+with open('apps/departements.geojson') as file:
     geo = geojson.load(file)
 
 df_map = df[(df['jour'] == '2021-03-02') & (df['sexe'] == 0)]
-df_dep_reg = pd.read_csv('departements-region.csv')
+df_dep_reg = pd.read_csv('apps/departements-region.csv')
 
 df_map['dep_name'] = df_dep_reg['dep_name'].to_numpy()
 df_map['region_name'] = df_dep_reg['region_name'].to_numpy()
@@ -93,7 +114,7 @@ fig_t.update_traces(textposition='outside',
 fig_total_hosp = px.scatter(df_cumul_hosp, x ='jour', y='cumul_hosp', title="Evolution of the number of people hospitalized in France")
 fig_total_rea = px.scatter(df_cumul_hosp, x ='jour', y='cumul_rea', title="Evolution of the number of people in reanimation in France")
 
-app.layout = html.Div([
+layout = html.Div([
     html.H1('Covid Data in France', style={"textAlign": "center"}),
 
     html.Div([
@@ -281,5 +302,5 @@ def update_figure(yaxis_column_name):
     )
 
 
-if __name__ == '__main__':
-    app.run_server(debug=False)
+#if __name__ == '__main__':
+ #   app.run_server(debug=False)

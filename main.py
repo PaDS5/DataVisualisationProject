@@ -1,16 +1,37 @@
-# This is a sample Python script.
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Connect to main app.py file
+from app import app
+from app import server
+
+# Connect to your app pages
+from apps import test, vacci
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
-# Press the green button in the gutter to run the script.
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div([
+        dcc.Link('Covid-19 in France', href='/apps/test'),
+        dcc.Link('Vaccination in France', href='/apps/vacci'),
+    ], className="row"),
+    html.Div(id='page-content', children=[])
+])
+
+
+@app.callback(Output('page-content', 'children'),
+              [Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/apps/test':
+        return test.layout
+    if pathname == '/apps/vacci':
+        return vacci.layout
+    else:
+        return "404 Page Error! Please choose a link"
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    app.run_server(debug=False)
