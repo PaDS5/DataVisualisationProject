@@ -7,9 +7,12 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import pandas as pd
 from app import app
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
 
+current_date = datetime.today() - timedelta(1)
+current_date = current_date.strftime('%Y-%m-%d')
 
 page = requests.get("https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/")
 soup = BeautifulSoup(page.text, 'html.parser')
@@ -45,7 +48,7 @@ fig = px.pie(df_filtered, values="rea", names="sexe")
 with open('apps/departements.geojson') as file:
     geo = geojson.load(file)
 
-df_map = df[(df['jour'] == '2021-03-02') & (df['sexe'] == 0)]
+df_map = df[(df['jour'] == current_date) & (df['sexe'] == 0)]
 df_dep_reg = pd.read_csv('apps/departements-region.csv')
 
 df_map['dep_name'] = df_dep_reg['dep_name'].to_numpy()
