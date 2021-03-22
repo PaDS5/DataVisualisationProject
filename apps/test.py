@@ -23,20 +23,20 @@ print(current_date)
 df = pd.read_csv("apps/donnees-hospitalieres.csv", sep =";")
 print(df.head())
 
-stringtolook = "https://static.data.gouv.fr/resources/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/20210320-185421/donnees-hospitalieres-covid19-"
-stringend = "-18h54.csv"
+"""stringtolook = "https://static.data.gouv.fr/resources/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/20210320-185421/donnees-hospitalieres-covid19-"
+stringend = "-18h09.csv"
 link = stringtolook + current_date + stringend
 print("tes  %s", link)
-test_dataset = link
+test_dataset = link"""
 #test_dataset = "https://static.data.gouv.fr/resources/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/20210320-185421/donnees-hospitalieres-covid19-2021-03-20-18h54.csv"
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 #app = dash.Dash(__name__, external_stylesheets = external_stylesheets)
 #server = app.server
 
-dffre = pd.read_csv(test_dataset, sep=";")
+"""dffre = pd.read_csv(test_dataset, sep=";")
 dffre = dffre.drop(['HospConv', 'SSR_USLD', 'autres'], axis=1)
 print("test")
-print(dffre.head())
+print(dffre.head())"""
 
 liste_y = ['hosp', 'rea', 'rad', 'dc']
 liste_x = ['jour']

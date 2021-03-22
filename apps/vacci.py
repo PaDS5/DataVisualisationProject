@@ -40,7 +40,7 @@ df_map['region_name'] = df_dep_reg['region_name'].to_numpy()
 df_curr_situation_vac_hosp = df_map.groupby(['region_name'], as_index=False).max()
 
 df_daily_vac = df.groupby(['jour'], as_index=False).sum()
-figtest = px.choropleth(df_map, geojson=geo, locations='dep', featureidkey="properties.code",
+figtest = px.choropleth(df_map, geojson=geo, locations='dep', featureidkey="properties.code", color='n_cum_dose1',
                         labels={'dc': 'Total vaccination'}, color_continuous_scale="Viridis", scope="europe",
                         hover_name='dep_name', hover_data=['n_dose1', 'n_dose2'])
 figtest.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
@@ -49,7 +49,7 @@ figtest.update_layout(width=1000, height=1000)
 
 fig_region = px.pie(df_curr_situation_vac_hosp, values='n_cum_dose1', names='region_name', title="region")
 
-fig_bot_right = px.pie(df_filtered, values="n_dose1", names="sexe_str", title="accination 1 by Gender")
+fig_bot_right = px.pie(df_filtered, values="n_dose1", names="sexe_str", title="Vaccination 1 by Gender")
 fig_bot_right.update_traces(textposition='outside',
                             textinfo='percent+label',
                             marker=dict(line=dict(color='#000000',
@@ -78,13 +78,13 @@ fig_t.update_traces(textposition='outside',
                     # rotation=180
                     )
 
-fig_total_vac1 = px.scatter(df_map, x=df_daily_vac["jour"], y=df_daily_vac['n_cum_dose1'],
+fig_total_vac1 = px.scatter(df_daily_vac, x="jour", y='n_cum_dose1',
                             title="Evolution of the cumulated number of people vaccinated stage 1 in France")
-fig_total_vac2 = px.scatter(df_map, x=df_daily_vac["jour"], y=df_daily_vac['n_cum_dose2'],
+fig_total_vac2 = px.scatter(df_daily_vac, x="jour", y='n_cum_dose2',
                             title="Evolution of the cumulated number of people vaccinated stage 2 in France")
-fig_daily_vac1 = px.scatter(df_map, x=df_daily_vac["jour"], y=df_daily_vac['n_dose1'],
+fig_daily_vac1 = px.scatter(df_daily_vac, x="jour", y='n_dose1',
                             title="Evolution of the number of people vaccinated stage 1 in France each day")
-fig_daily_vac2 = px.scatter(df_map, x=df_daily_vac["jour"], y=df_daily_vac['n_dose2'],
+fig_daily_vac2 = px.scatter(df_daily_vac, x="jour", y='n_dose2',
                             title="Evolution of the number of people vaccinated stage 2 in France each day")
 
 layout = html.Div([
@@ -92,7 +92,7 @@ layout = html.Div([
 
     html.Div([
         html.Div([
-            html.H4('First graph', style={"color": "white", "textAlign": "center"}),
+            html.H4('Global evolution in France', style={"color": "white", "textAlign": "center"}),
             html.Br(),
             html.P('Here we can choose the parameter that we want to see across time',
                    style={"textAlign": "justify", "color": "white"}),
@@ -103,7 +103,7 @@ layout = html.Div([
             html.Div(dcc.Dropdown(
                 id='yaxis-column23',
                 options=[{'label': i, 'value': i} for i in liste_y],
-                value='n_dose1'
+                value='n_cum_dose1'
             )),
         ], className="three columns", style={"padding": "3%"}),
 
@@ -152,13 +152,17 @@ layout = html.Div([
 
         html.Div([
             html.Div([
-                html.H4('First graph', style={"color": "white", "textAlign": "center"}),
+                html.H2('Vaccination across Gender', style={"color": "white", "textAlign": "center"}),
                 html.Br(),
-                html.P('Here we can choose the parameter that we want to see across time',
-                       style={"textAlign": "justify", "color": "white"}),
                 html.Br(),
-                html.P('We can see the number of vaccination every day\n',
-                       style={"textAlign": "justify", "color": "white"}),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+
+                html.P('Let\'s have a look at the proportion of the first dose by gender',
+                       style={"textAlign": "center", "color": "white"}),
+                html.Br(),
                 html.Br(),
 
             ], className="six columns", style={"padding": "3%"}),
@@ -179,15 +183,19 @@ layout = html.Div([
                 figure=figtest),
         ], className="seven columns", style={"height": "100%"}),
 
+        html.Div([
+            html.H4('Informations for each department', style={"color": "white", "textAlign": "center"}),
+            html.Br(),
+
+            html.P('You can have a look on the situation of every department with the map',
+                   style={"textAlign": "center", "color": "white"}),
+            html.Br(),
+            html.Br(),
+
+        ], className="five columns", style={"backgroundColor": "#313131", "padding": "3%"}),
+
     ], className="row", style={"padding": "3%", "border": "solid"}),
 
-    html.Div([
-        html.Div([
-            dcc.Graph(
-                id='graph8623',
-                figure=fig_region),
-        ], className="seven columns", style={"height": "100%"}),
-    ], className="row", style={"padding": "3%"})
 
 ], style={"padding": "3%"})
 
