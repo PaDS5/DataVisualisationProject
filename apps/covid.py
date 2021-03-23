@@ -31,7 +31,7 @@ print("Link dataset", dataset_link) #We display the link to be sure to get the g
 df = pd.read_csv(dataset_link, sep=";")
 
 
-#This external_stylesheets is thez one that allow us to use something similar to Bootstrap for the disposition on the Dashboard
+#This external_stylesheets is the one that allow us to use something similar to Bootstrap for the disposition on the Dashboard
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
@@ -59,7 +59,7 @@ df_filtered['sexe_str'] = df_filtered['sexe'].apply(lambda x: "Homme" if x == 1 
 
 df_new_filtered = df[df['sexe'] == 0].groupby('dep')
 
-fig = px.pie(df_filtered, values="rea", names="sexe")
+
 
 
 #This part concerns the last part of the dashboard, everything around the France map that we use.

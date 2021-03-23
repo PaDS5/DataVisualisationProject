@@ -9,6 +9,10 @@ import pandas as pd
 import numpy as np
 from app import app
 
+### DISCLAIMER : A lot of code is similar that we used in the covid.py file for graphs. Only the dataset and de varialbes to display change.
+
+#Concerning the vaccination dataset, the recent changes made on the available dataset are not working with what we defined here so we kept the original dataset that we had
+
 df = pd.read_csv("apps/vacsi-s-dep-2021-03-02-20h15.csv", sep=",")
 df = df.iloc[8:]
 
@@ -29,6 +33,8 @@ df_new_filtered = df[df['sexe'] == 0].groupby('dep')
 with open('apps/departements.geojson') as file:
     geo = geojson.load(file)
 
+#This time for the map, we set the date to the last date in the dataset which is March, 1st since we took the dataset of March 2nd
+
 df_map = df[(df['jour'] == '2021-03-01') & (df['sexe'] == 0)]
 df_map.drop(df_map.tail(1).index, inplace=True)
 
@@ -40,17 +46,17 @@ df_map['region_name'] = df_dep_reg['region_name'].to_numpy()
 df_curr_situation_vac_hosp = df_map.groupby(['region_name'], as_index=False).max()
 
 df_daily_vac = df.groupby(['jour'], as_index=False).sum()
-figtest = px.choropleth(df_map, geojson=geo, locations='dep', featureidkey="properties.code", color='n_cum_dose1',
+france_map = px.choropleth(df_map, geojson=geo, locations='dep', featureidkey="properties.code", color='n_cum_dose1',
                         labels={'dc': 'Total vaccination'}, color_continuous_scale="Viridis", scope="europe",
                         hover_name='dep_name', hover_data=['n_dose1', 'n_dose2'])
-figtest.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
-# figtest.update_layout(margin={"r":50,"t":50,"l":50,"b":50})
-figtest.update_layout(width=1000, height=1000)
+france_map.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
+# france_map.update_layout(margin={"r":50,"t":50,"l":50,"b":50})
+france_map.update_layout(width=1000, height=1000)
 
-fig_region = px.pie(df_curr_situation_vac_hosp, values='n_cum_dose1', names='region_name', title="region")
+#This time we define the graph to represent the vaccination per gender for first dose
 
-fig_bot_right = px.pie(df_filtered, values="n_dose1", names="sexe_str", title="Vaccination 1 by Gender")
-fig_bot_right.update_traces(textposition='outside',
+fig_vacci_gender = px.pie(df_filtered, values="n_dose1", names="sexe_str", title="Vaccination 1 by Gender")
+fig_vacci_gender.update_traces(textposition='outside',
                             textinfo='percent+label',
                             marker=dict(line=dict(color='#000000',
                                                   width=2)),
@@ -58,25 +64,9 @@ fig_bot_right.update_traces(textposition='outside',
                             opacity=0.9,
                             # rotation=180
                             )
-fig_bot_left = px.pie(df_filtered, values="n_dose1", names="sexe_str", title="vaccination 2 by Gender")
-fig_bot_left.update_traces(textposition='outside',
-                           textinfo='percent+label',
-                           marker=dict(line=dict(color='#000000',
-                                                 width=2)),
-                           pull=[0.05, 0, 0.03],
-                           opacity=0.9,
-                           # rotation=180
-                           )
 
-fig_t = px.pie(df_filtered, values="n_cum_dose1", names="sexe_str", title="Deceased by Gender")
-fig_t.update_traces(textposition='outside',
-                    textinfo='percent+label',
-                    marker=dict(line=dict(color='#000000',
-                                          width=2)),
-                    pull=[0.05, 0, 0.03],
-                    opacity=0.9,
-                    # rotation=180
-                    )
+
+#Graphs for total and daily administration of vaccine (by dose)
 
 fig_total_vac1 = px.scatter(df_daily_vac, x="jour", y='n_cum_dose1',
                             title="Evolution of the cumulated number of people vaccinated stage 1 in France")
@@ -86,6 +76,8 @@ fig_daily_vac1 = px.scatter(df_daily_vac, x="jour", y='n_dose1',
                             title="Evolution of the number of people vaccinated stage 1 in France each day")
 fig_daily_vac2 = px.scatter(df_daily_vac, x="jour", y='n_dose2',
                             title="Evolution of the number of people vaccinated stage 2 in France each day")
+
+#For the definition of the layout, we kept the same structure as the one for the covid information. We just change the graphs that are displayed.
 
 layout = html.Div([
     html.H1('Covid Vaccination Data in France', style={"textAlign": "center"}),
@@ -144,8 +136,8 @@ layout = html.Div([
                 figure=fig_daily_vac2),
         ], className='six columns'),
 
-        # dcc.Graph(id = 'third-graph', figure= fig_bot_right, className='three columns'),
-        # dcc.Graph(id = 'fourth-graph', figure= fig_bot_right, className='three columns')
+        # dcc.Graph(id = 'third-graph', figure= fig_vacci_gender, className='three columns'),
+        # dcc.Graph(id = 'fourth-graph', figure= fig_vacci_gender, className='three columns')
     ], className="row", style={"border": "solid", "padding": "2%"}),
 
     html.Div([
@@ -168,7 +160,7 @@ layout = html.Div([
             ], className="six columns", style={"padding": "3%"}),
 
             html.Div([
-                dcc.Graph(id='pie_graph', figure=fig_bot_right)
+                dcc.Graph(id='pie_graph', figure=fig_vacci_gender)
             ], className="six columns")
 
         ], className='row', style={"backgroundColor": "#313131"}),
@@ -180,7 +172,7 @@ layout = html.Div([
         html.Div([
             dcc.Graph(
                 id='graph823',
-                figure=figtest),
+                figure=france_map),
         ], className="seven columns", style={"height": "100%"}),
 
         html.Div([
