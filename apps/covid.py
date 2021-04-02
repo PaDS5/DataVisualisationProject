@@ -29,7 +29,7 @@ print("Link dataset", dataset_link) #We display the link to be sure to get the g
 
 
 df = pd.read_csv(dataset_link, sep=";")
-
+df = df.rename(columns={'hosp': 'hospitalisations', 'rea': 'reanimation', 'jour':'day', 'rad':'return home', 'dc':'deaths', 'dep':'department'})
 
 #This external_stylesheets is the one that allow us to use something similar to Bootstrap for the disposition on the Dashboard
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -38,9 +38,9 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 #These three lists will be used for the first graph displaying the global situation in France
 #We will have the choice to choose between the number of Hospitalisations, Reanimations, Home returns eand Deceased displayed in function of the day. Basically, it's just to show
 #the evolution of the pandemic in France since the beginning
-liste_y = ['hosp', 'rea', 'rad', 'dc']
-liste_x = ['jour']
-liste_dep = ['dep']
+liste_y = ['hospitalisations', 'reanimation', 'return home', 'deaths']
+liste_x = ['day']
+liste_dep = ['department']
 
 #In the dataset, we add three values for the 'sexe' parameter : 0 for all,  1 for men and 2 for women. For cumulated values, we take only rows with the value 0 for 'sexe'
 
@@ -49,15 +49,15 @@ df_cumul_hosp = df_firstgraph
 
 #Now, we create two new columns, one for the cumulated number of hospitalisations and one for the cumulated number of reanimations.
 
-df_cumul_hosp['cumul_hosp'] = df_cumul_hosp.groupby(['jour'], as_index=False)['hosp'].cumsum()
-df_cumul_hosp = df_cumul_hosp.groupby(['jour'], as_index=False).max()
-df_cumul_hosp['cumul_rea'] = df_cumul_hosp.groupby(['jour'], as_index=False)['rea'].cumsum()
-df_cumul_hosp = df_cumul_hosp.groupby(['jour'], as_index=False).max()
+df_cumul_hosp['cumulated hospitalisations'] = df_cumul_hosp.groupby(['day'], as_index=False)['hospitalisations'].cumsum()
+df_cumul_hosp = df_cumul_hosp.groupby(['day'], as_index=False).max()
+df_cumul_hosp['cumulated reanimation'] = df_cumul_hosp.groupby(['day'], as_index=False)['reanimation'].cumsum()
+df_cumul_hosp = df_cumul_hosp.groupby(['day'], as_index=False).max()
 
 df_filtered = df[df['sexe'] != 0]
-df_filtered['sexe_str'] = df_filtered['sexe'].apply(lambda x: "Homme" if x == 1 else "Femme")
+df_filtered['sexe_str'] = df_filtered['sexe'].apply(lambda x: "Men" if x == 1 else "Women")
 
-df_new_filtered = df[df['sexe'] == 0].groupby('dep')
+df_new_filtered = df[df['sexe'] == 0].groupby('department')
 
 
 
@@ -69,7 +69,7 @@ with open('apps/departements.geojson') as file:
 
 #To get the current situation, we just get all the rows for the current date that we defined at the beginning.
 
-df_map = df[(df['jour'] == current_date) & (df['sexe'] == 0)]
+df_map = df[(df['day'] == current_date) & (df['sexe'] == 0)]
 df_dep_reg = pd.read_csv('apps/departements-region.csv')
 
 #We add the department and regions names.
@@ -80,8 +80,8 @@ df_curr_situation = df_map
 
 #We create two new columns to group numbers by regions
 
-df_curr_situation['total_hosp_per_region'] = df_curr_situation.groupby(['region_name'], as_index=False)['hosp'].cumsum()
-df_curr_situation['total_rea_per_region'] = df_curr_situation.groupby(['region_name'], as_index=False)['rea'].cumsum()
+df_curr_situation['total_hosp_per_region'] = df_curr_situation.groupby(['region_name'], as_index=False)['hospitalisations'].cumsum()
+df_curr_situation['total_rea_per_region'] = df_curr_situation.groupby(['region_name'], as_index=False)['reanimation'].cumsum()
 
 df_curr_situation_fig_hosp = df_curr_situation.groupby(['region_name'], as_index=False).max()
 
@@ -91,15 +91,15 @@ df_curr_situation_fig_hosp = df_curr_situation.groupby(['region_name'], as_index
 
 #Those graphs will show the cumulated number of Hospitalisations and reanimations. We used the dataset that we create that contains these two columns to do that.
 
-total_hosp = px.scatter(df_cumul_hosp, x='jour', y='cumul_hosp',
+total_hosp = px.scatter(df_cumul_hosp, x='day', y='cumulated hospitalisations',
                             title="Evolution of the number of people hospitalized in France")
-total_rea = px.scatter(df_cumul_hosp, x='jour', y='cumul_rea',
+total_rea = px.scatter(df_cumul_hosp, x='day', y='cumulated reanimation',
                            title="Evolution of the number of people in reanimation in France")
 
 
 #The next three graphs wil be all informations based on the gender: Hospitalisations, Reanimations and Deceased
 
-gender_hosp = px.pie(df_filtered, values="hosp", names="sexe_str", title="Hospitalisations by Gender")
+gender_hosp = px.pie(df_filtered, values="hospitalisations", names="sexe_str", title="Hospitalisations by Gender")
 gender_hosp.update_traces(textposition='outside',
                             textinfo='percent+label',
                             marker=dict(line=dict(color='#000000',
@@ -109,7 +109,7 @@ gender_hosp.update_traces(textposition='outside',
                             # rotation=180
                             )
 
-gender_rea = px.pie(df_filtered, values="rea", names="sexe_str", title="Reanimation by Gender")
+gender_rea = px.pie(df_filtered, values="reanimation", names="sexe_str", title="Reanimation by Gender")
 gender_rea.update_traces(textposition='outside',
                            textinfo='percent+label',
                            marker=dict(line=dict(color='#000000',
@@ -119,7 +119,7 @@ gender_rea.update_traces(textposition='outside',
                            # rotation=180
                            )
 
-gender_dec = px.pie(df_filtered, values="dc", names="sexe_str", title="Deceased by Gender")
+gender_dec = px.pie(df_filtered, values="deaths", names="sexe_str", title="Deceased by Gender")
 gender_dec.update_traces(textposition='outside',
                     textinfo='percent+label',
                     marker=dict(line=dict(color='#000000',
@@ -132,9 +132,9 @@ gender_dec.update_traces(textposition='outside',
 #We create a map of France to get a better representaion of the current situation. The color will be the total number of deaths per department.
 #When using the map, each department will have the current number of people in hospitalisation and reanimation
 
-france_map = px.choropleth(df_map, geojson=geo, locations='dep', featureidkey="properties.code", color='dc',
-                        labels={'dc': 'Total décès'}, color_continuous_scale="Viridis", scope="europe",
-                        hover_name='dep_name', hover_data=['hosp', 'rea'])
+france_map = px.choropleth(df_map, geojson=geo, locations='department', featureidkey="properties.code", color='deaths',
+                        labels={'deaths': 'Total deaths'}, color_continuous_scale="Viridis", scope="europe",
+                        hover_name='dep_name', hover_data=['hospitalisations', 'reanimation'])
 france_map.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
 # france_map.update_layout(margin={"r":50,"t":50,"l":50,"b":50})
 france_map.update_layout(width=1000, height=1000)
@@ -172,7 +172,7 @@ layout = html.Div([
             html.Div(dcc.Dropdown(
                 id='yaxis-column',
                 options=[{'label': i, 'value': i} for i in liste_y],
-                value='hosp'
+                value='hospitalisations'
             )),
         ], className="three columns", style={"padding": "3%"}), #We use a syntax similar to Bootstrap to structure the page. We can do this thanks to the external stylesheet that we dl before
 
@@ -353,7 +353,7 @@ layout = html.Div([
 )
 def update_figure(yaxis_column_name):
     return px.scatter(
-        df_firstgraph, x=df_firstgraph['jour'], y=df_firstgraph[yaxis_column_name], color='dep',
+        df_firstgraph, x=df_firstgraph['day'], y=df_firstgraph[yaxis_column_name], color='department',
         render_mode="webgl", title="Evolution of the COVID-19 situation in France"
     )
 
